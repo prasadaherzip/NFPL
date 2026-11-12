@@ -9,6 +9,6 @@ test('client scope is enforced',()=>{const u={...person('client','client'),clien
 test('workflow stage is enforced',()=>{const u=person('MIC','checker');assert.equal(canAct(u,'check',baseJob).allowed,false);assert.equal(canAct(u,'check',{...baseJob,stage:'prepared'}).allowed,true)});
 test('inactive and absent users are denied',()=>{assert.equal(canAct({...person('MIM','maker'),active:false},'prepare',baseJob).allowed,false);assert.equal(canAct({...person('MIM','maker'),absent:true},'prepare',baseJob).allowed,false)});
 test('maker checker separation is enforced',()=>{const u=person('MIC','checker');assert.equal(canAct(u,'check',{...baseJob,stage:'prepared',maker_id:'MIC'}).allowed,false)});
-test('admin can act but cannot self-escalate through grant policy',()=>{assert.equal(canAct({...person('ADM','admin',null,null)},'reopen',{...baseJob,stage:'cancelled'}).allowed,true)});
+test('admin manages access but cannot perform job actions',()=>{const admin={...person('ADM','admin',null,null)};assert.equal(canAct(admin,'reopen',{...baseJob,stage:'cancelled'}).allowed,false);assert.equal(canAct(admin,'check',{...baseJob,stage:'prepared'}).allowed,false)});
 test('parser may import but not perform human actions',()=>{const p=person('parser','system');assert.equal(canAct(p,'import',baseJob).allowed,true);assert.equal(canAct(p,'check',{...baseJob,stage:'prepared'}).allowed,false)});
 test('filed jobs reject lifecycle actions',()=>{assert.equal(canAct(person('MIF','filer'),'file',{...baseJob,stage:'filed'}).allowed,false)});

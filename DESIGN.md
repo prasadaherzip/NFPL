@@ -2,7 +2,7 @@
 
 The service separates visibility from action authorization. Jobs-for-me is an indexed operational list based on ownership and basic scope; every requested action is re-evaluated by the centralized permission engine. Denials return a human-readable reason and authorization fails closed when identity, scope, state, or role is uncertain.
 
-Roles are maker, checker, admin, client, and system. Grants are additive and may be scoped by client, branch, direction, and mode. A maker cannot check their own job. Absent users cannot act, and explicit owner assignments prevent a changed responsibility from silently granting the former owner access. Client users remain within their client. Admin actions are bounded; the normal grant API prevents self-granting and admin grants.
+Roles are maker, checker, admin, client, and system. Grants are additive and may be scoped by client, branch, direction, and mode. A maker cannot check their own job. Absent users cannot act, and explicit owner assignments prevent a changed responsibility from silently granting the former owner access. Client users remain within their client. Admin manages access and profiles but is denied all operational job actions; the normal grant API prevents self-granting and admin grants.
 
 Filed jobs cannot be prepared, checked, or filed again. Cancellation is limited to checker/admin policy and reopening is admin-only. The overnight parser is a system account with import-only behavior. Permission reasons are persisted with history so an operator can understand a decision later. History is append-only and state changes plus history are transactional.
 

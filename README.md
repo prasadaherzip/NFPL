@@ -44,7 +44,7 @@ There are 18 users total. All standard teams initially cover all ten clients wit
 
 ## Workflow and permissions
 
-`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, Filers can file only, and Admin can perform administrative workflow actions. Branch, direction, client scope, role, stage, active status, and absence are enforced. The maker/checker separation rule prevents the preparer from checking the same job. Confirmation is treated as job creation/system setup because no separate confirmation role is specified.
+`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, and Filers can file only. Admin manages access and profiles but cannot perform operational job actions. Branch, direction, client scope, role, stage, active status, and absence are enforced. The maker/checker separation rule prevents the preparer from checking the same job. Confirmation is treated as job creation/system setup because no separate confirmation role is specified.
 
 ## API
 

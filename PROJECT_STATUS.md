@@ -14,6 +14,8 @@ The PDF was read from `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pd
 
 The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, `GET /users/:id/history`, and `GET /grants` endpoints. Profile/access and grant updates are parameterized, transactional, and append audit events with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, and absence. ADM may update their own profile/access fields; ordinary grant self-escalation remains blocked.
 
+Latest authorization rule: ADM can view jobs and manage users/access profiles, but cannot perform operational job actions (`prepare`, `check`, `file`, `cancel`, `reopen`, `import`, or `export`). This restriction is enforced in the centralized permission engine and reflected in the dashboard action controls.
+
 The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.

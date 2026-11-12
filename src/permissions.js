@@ -5,6 +5,7 @@ function canAct(user,action,job,grants=[]){
   if(!ACTIONS.has(action))return{allowed:false,reason:`Unknown action: ${action}.`};
   if(!user.active||user.absent)return{allowed:false,reason:`${user.name} is inactive or absent.`};
   if(!job.client_active||!job.branch_active)return{allowed:false,reason:'The job client or branch is inactive.'};
+  if(user.role==='admin')return{allowed:false,reason:'Admins manage access and profiles but cannot perform operational job actions.'};
   if(user.role==='client'&&user.client_id!==job.client_id)return{allowed:false,reason:'Client users may only access their own client jobs.'};
   if(user.role==='client'&&user.branch_id&&user.branch_id!==job.branch_id)return{allowed:false,reason:`${user.name} is restricted to branch ${user.branch_id}.`};
   if(['maker','checker','filer'].includes(user.role)&&user.branch_id&&user.branch_id!==job.branch_id)return{allowed:false,reason:`${user.name} is restricted to branch ${user.branch_id}.`};
@@ -25,7 +26,6 @@ function canAct(user,action,job,grants=[]){
   if(user.role==='client')return{allowed:false,reason:'Client users may follow their own client jobs but cannot perform internal workflow actions.'};
   if(action==='cancel'&&!['admin','checker'].includes(user.role)&&!grants.some(g=>g.active&&g.role==='checker'&&g.action==='cancel'&&scopeMatches(g,job)))return{allowed:false,reason:'Only a checker or admin may cancel a job.'};
   if(action==='reopen'&&user.role!=='admin'&&!grants.some(g=>g.active&&g.role==='admin'&&g.action==='reopen'&&scopeMatches(g,job)))return{allowed:false,reason:'Only an admin may reopen a job.'};
-  if(user.role==='admin')return{allowed:true,reason:'Admin policy permits this action.'};
   const match=grants.find(g=>g.active&&g.action===action&&scopeMatches(g,job));
   if(match)return{allowed:true,reason:`Active ${match.role} grant matches this job.`};
   if(action==='prepare'&&user.role==='maker'&&job.maker_id===user.id)return{allowed:true,reason:'Maker is assigned to this job.'};
