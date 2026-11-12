@@ -6,6 +6,7 @@ function canAct(user,action,job,grants=[]){
   if(!user.active||user.absent)return{allowed:false,reason:`${user.name} is inactive or absent.`};
   if(!job.client_active||!job.branch_active)return{allowed:false,reason:'The job client or branch is inactive.'};
   if(user.role==='client'&&user.client_id!==job.client_id)return{allowed:false,reason:'Client users may only access their own client jobs.'};
+  if(user.role==='client'&&user.branch_id&&user.branch_id!==job.branch_id)return{allowed:false,reason:`${user.name} is restricted to branch ${user.branch_id}.`};
   if(['maker','checker','filer'].includes(user.role)&&user.branch_id&&user.branch_id!==job.branch_id)return{allowed:false,reason:`${user.name} is restricted to branch ${user.branch_id}.`};
   if(['maker','checker','filer'].includes(user.role)&&user.direction&&user.direction!==job.direction)return{allowed:false,reason:`${user.name} is restricted to ${user.direction} jobs.`};
   if(job.stage==='filed'&&['prepare','check','file'].includes(action))return{allowed:false,reason:'Filed jobs cannot be prepared, checked, or filed again.'};
@@ -14,14 +15,14 @@ function canAct(user,action,job,grants=[]){
   if(action==='check'&&job.stage!=='prepared')return{allowed:false,reason:'Only prepared jobs can be checked.'};
   if(action==='file'&&job.stage!=='checked')return{allowed:false,reason:'Only checked jobs can be filed.'};
   if(action==='reopen'&&job.stage!=='cancelled')return{allowed:false,reason:'Only cancelled jobs can be reopened.'};
+  if(user.role==='system'&&action==='import')return{allowed:true,reason:'Overnight parser is permitted to import.'};
+  if(user.role==='system')return{allowed:false,reason:'The overnight parser may import only.'};
   const requiredRole={prepare:'maker',check:'checker',file:'filer'}[action];
   if(requiredRole&&user.role!==requiredRole&&user.role!=='admin')return{allowed:false,reason:`Only a ${requiredRole} may ${action} jobs.`};
   if(action==='check'&&job.maker_id===user.id)return{allowed:false,reason:'Maker/checker separation prevents the maker from checking the same job.'};
   if(action==='prepare'&&job.maker_id&&job.maker_id!==user.id)return{allowed:false,reason:'Only the assigned maker may prepare this job.'};
   if(action==='check'&&job.checker_id&&job.checker_id!==user.id)return{allowed:false,reason:'Only the assigned checker may check this job.'};
-  if(user.role==='system'&&action==='import')return{allowed:true,reason:'Overnight parser is permitted to import.'};
-  if(user.role==='system')return{allowed:false,reason:'The overnight parser may import only.'};
-  if(user.role==='client'&&!['import','export'].includes(action))return{allowed:false,reason:'Client users cannot perform internal workflow actions.'};
+  if(user.role==='client')return{allowed:false,reason:'Client users may follow their own client jobs but cannot perform internal workflow actions.'};
   if(action==='cancel'&&!['admin','checker'].includes(user.role)&&!grants.some(g=>g.active&&g.role==='checker'&&g.action==='cancel'&&scopeMatches(g,job)))return{allowed:false,reason:'Only a checker or admin may cancel a job.'};
   if(action==='reopen'&&user.role!=='admin'&&!grants.some(g=>g.active&&g.role==='admin'&&g.action==='reopen'&&scopeMatches(g,job)))return{allowed:false,reason:'Only an admin may reopen a job.'};
   if(user.role==='admin')return{allowed:true,reason:'Admin policy permits this action.'};

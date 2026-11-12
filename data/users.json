@@ -11,5 +11,10 @@
   {"id":"DEM","name":"Delhi Export Maker","role":"maker","branch_id":"B2","direction":"export"},
   {"id":"DEC","name":"Delhi Export Checker","role":"checker","branch_id":"B2","direction":"export"},
   {"id":"DEF","name":"Delhi Export Filer","role":"filer","branch_id":"B2","direction":"export"},
-  {"id":"ADM","name":"Admin","role":"admin"}
+  {"id":"ABM","name":"All-Branch Maker","role":"maker"},
+  {"id":"KRC","name":"Kolkata Restricted Checker","role":"checker","client_id":"C1","branch_id":"B3","direction":"import"},
+  {"id":"PAM","name":"Pune Absent Maker","role":"maker","branch_id":"B4","absent":true},
+  {"id":"NCU","name":"Nagpur Client User","role":"client","client_id":"C2","branch_id":"B5"},
+  {"id":"ADM","name":"Admin","role":"admin"},
+  {"id":"PAR","name":"Overnight Parser","role":"system","system_account":true}
 ]

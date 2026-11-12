@@ -11,13 +11,13 @@ npm test
 npm start
 ```
 
-Open http://localhost:3000. The demo uses request-supplied IDs as identity selectors; this is explicitly not authentication.
+Open http://localhost:3000. The demo uses request-supplied IDs as identity selectors; this is not production authentication.
 
-The application uses PostgreSQL through the `pg` connection pool. The schema is initialized automatically. This is a deliberate deviation from the PDF, which permits any storage but the earlier workspace brief specified SQLite.
+The application uses PostgreSQL through the `pg` connection pool. The schema is initialized automatically. This is documented as a deliberate storage choice; the supplied PDF leaves storage open, while the older workspace brief mentioned SQLite.
 
-## Sample users
+## Branches and users
 
-There are two branches: Mumbai and Delhi. Each branch has Import and Export teams. Each team has a Maker, Checker, and Filer, plus one Admin:
+There are five branches: Mumbai, Delhi, Kolkata, Pune, and Nagpur. Only Mumbai and Delhi have standard branch-direction teams.
 
 | Name | Code | Branch | Direction | Role |
 |---|---|---|---|---|
@@ -33,15 +33,18 @@ There are two branches: Mumbai and Delhi. Each branch has Import and Export team
 | Delhi Export Maker | DEM | Delhi | Export | Maker |
 | Delhi Export Checker | DEC | Delhi | Export | Checker |
 | Delhi Export Filer | DEF | Delhi | Export | Filer |
+| All-Branch Maker | ABM | All branches | All directions | Maker |
+| Kolkata Restricted Checker | KRC | Kolkata | Import | Checker |
+| Pune Absent Maker | PAM | Pune | All directions | Maker, absent |
+| Nagpur Client User | NCU | Nagpur | Client 2 | Client user |
 | Admin | ADM | All | All | Admin |
+| Overnight Parser | PAR | System | Approved parser operations | System |
 
-All operational users initially have access to all 10 clients within their branch and direction. Client restrictions remain supported by nullable client scopes in grants and the user-management API.
+There are 18 users total. All standard teams initially cover all ten clients within their branch and direction. ABM can prepare across all branches and directions but can check only selected clients. KRC is limited to Client 1, Kolkata, Import. PAM is absent and cannot act. NCU can follow only Client 2 in Nagpur and cannot perform internal workflow actions. PAR is a non-human parser account.
 
-## Workflow
+## Workflow and permissions
 
-`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, Filers can file only, and Admin can perform administrative workflow actions. Branch, direction, client scope, role, stage, active status, and absence are all enforced. Unknown or invalid requests fail closed.
-
-Confirmation is treated as job creation/system setup because the assignment does not define a separate confirmation role.
+`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, Filers can file only, and Admin can perform administrative workflow actions. Branch, direction, client scope, role, stage, active status, and absence are enforced. The maker/checker separation rule prevents the preparer from checking the same job. Confirmation is treated as job creation/system setup because no separate confirmation role is specified.
 
 ## API
 
@@ -49,25 +52,28 @@ Confirmation is treated as job creation/system setup because the assignment does
 - `GET /users`
 - `POST /users` — admin-only user creation
 - `PATCH /users/:id` — admin-only profile/access update
-- `GET /users/:id/history` — audit history for administrative changes
+- `GET /users/:id/history` — administrative history
+- `GET /grants?actorId=ADM` — admin-only grant listing
+- `POST /grants` — admin-only grant creation
+- `DELETE /grants/:id?actorId=ADM` — grant revocation
 - `GET /jobs/for-me/:userId`
 - `GET /check?userId=...&jobId=...&action=...`
 - `POST /jobs/:id/actions`
 - `GET /jobs/:id/history`
-- `POST /grants`
-- `DELETE /grants/:id`
 
-All SQL is parameterized. User changes and grant changes are transactional with append-only history records. Admins cannot change their own access or status through the user-management API.
+All SQL is parameterized. User and grant changes are transactional with append-only history containing actor, target, change details, reason, and timestamp. Admins cannot change their own access or status through the user-management API.
 
 ## Demo
 
-1. Select `MIM` and load jobs; show that only Mumbai Import jobs can be prepared.
+1. Select `MIM`; show that only Mumbai Import jobs can be prepared.
 2. Select `MIC`; show that only prepared Mumbai Import jobs can be checked.
 3. Select `MIF`; show that only checked Mumbai Import jobs can be filed.
-4. Select `DIC` and try a Mumbai or Export job; show the human-readable denial reason.
-5. Select `ADM`, open Admin Controls, and review all 13 users, their role, branch, direction, client scope, status, and assignment instructions.
-6. Select a job and show its append-only Audit History.
+4. Select `KRC`; try a non-Kolkata, non-Import, or non-Client-1 job and show the denial reason.
+5. Select `PAM`; show that absence removes all actionable jobs.
+6. Select `NCU`; show the restricted client-side view and greyed internal actions.
+7. Select `ADM`, open Admin Controls, edit a profile, create/revoke a grant, and show audit history.
+8. Select a job and show its append-only history.
 
 ## Verification
 
-`npm test` runs the permission scenarios. `npm run seed` creates the 13-user sample data. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.
+`npm test` runs the permission scenarios. `npm run seed` creates 18 users, five branches, ten clients, and 300 jobs. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.

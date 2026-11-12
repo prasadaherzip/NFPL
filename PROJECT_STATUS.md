@@ -10,11 +10,13 @@ The supplied assignment brief specifies SQLite via better-sqlite3. The user expl
 
 ## Current user-provided specification
 
-The PDF was read from `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`. It describes the core workflow and edge cases but does not prescribe the 13-user/two-branch matrix in the pasted implementation specification. The current seed follows that pasted specification: Mumbai and Delhi, Import and Export, twelve coded Maker/Checker/Filer users, and ADM. The existing `ASSIGNMENT_BRIEF.md` was present despite the pasted instructions saying it was missing; this discrepancy is documented in `DESIGN.md`.
+The PDF was read from `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`. It describes the core workflow and edge cases. The corrected user-provided specification now requires five branches, standard teams only in Mumbai and Delhi, and 18 users including ABM, KRC, PAM, NCU, ADM, and PAR. The existing `ASSIGNMENT_BRIEF.md` was present despite the pasted instructions saying it was missing; this discrepancy is documented in `DESIGN.md`.
 
-The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, and `GET /users/:id/history` endpoints. Profile/access updates are parameterized, transactional, and append an audit event with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, and absence.
+The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, `GET /users/:id/history`, and `GET /grants` endpoints. Profile/access and grant updates are parameterized, transactional, and append audit events with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, absence, and create/revoke grants.
 
-Verification of the new specification used a separate `nfpl_assignment` PostgreSQL database: `npm run seed` created 13 users, 2 branches, 10 clients, 300 jobs, and 12 grants; API smoke tests returned 13 users, 64 Mumbai Import Maker jobs, a successful Admin profile update, and one user-history record. `npm test` passes 11/11.
+The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases.
+
+Verification of the corrected specification used a separate `nfpl_corrected` PostgreSQL database: `npm run seed` created 18 users, 5 branches, 10 clients, 300 jobs, and 17 grants; API smoke tests returned 18 users, one KRC queue job, one NCU client-visible job, zero PAM jobs because of absence, and a successful grant listing. `npm test` passes 11/11.
 
 ## Current implementation phase
 

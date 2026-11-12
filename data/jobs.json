@@ -1,5 +1,12 @@
 [
-  {"reference":"JOB-0001","client_id":"C1","branch_id":"B1","direction":"import","mode":"air","stage":"confirmed","maker_id":"maker1","checker_id":"checker1"},
-  {"reference":"JOB-0002","client_id":"C2","branch_id":"B2","direction":"export","mode":"fcl","stage":"prepared","maker_id":"maker2","checker_id":"checker2"},
-  {"reference":"JOB-0003","client_id":"C3","branch_id":"B3","direction":"import","mode":"lcl","stage":"filed","maker_id":"maker2","checker_id":"checker1"}
+  {"reference":"JOB-0001","client_id":"C1","branch_id":"B1","direction":"import","mode":"air","stage":"new"},
+  {"reference":"JOB-0002","client_id":"C2","branch_id":"B1","direction":"export","mode":"fcl","stage":"prepared"},
+  {"reference":"JOB-0003","client_id":"C3","branch_id":"B2","direction":"import","mode":"lcl","stage":"checked"},
+  {"reference":"JOB-0004","client_id":"C4","branch_id":"B2","direction":"export","mode":"air","stage":"filed"},
+  {"reference":"JOB-0005","client_id":"C5","branch_id":"B3","direction":"import","mode":"fcl","stage":"new"},
+  {"reference":"JOB-0006","client_id":"C6","branch_id":"B3","direction":"export","mode":"lcl","stage":"prepared"},
+  {"reference":"JOB-0007","client_id":"C7","branch_id":"B4","direction":"import","mode":"air","stage":"checked"},
+  {"reference":"JOB-0008","client_id":"C8","branch_id":"B4","direction":"export","mode":"fcl","stage":"reopened"},
+  {"reference":"JOB-0009","client_id":"C9","branch_id":"B5","direction":"import","mode":"lcl","stage":"cancelled"},
+  {"reference":"JOB-0010","client_id":"C10","branch_id":"B5","direction":"export","mode":"air","stage":"confirmed"}
 ]
