@@ -1,5 +1,21 @@
 # NFPL Access Control Service — Project Status
 
+## Assignment compliance audit — 2026-11-12
+
+Audited the implementation against `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`, the supplied two-page assignment. The PDF is the effective source for this audit because `ASSIGNMENT_BRIEF.md` is not present in the current workspace despite prior status entries claiming it exists.
+
+Current verification: `npm test` passes 11/11 and all JavaScript syntax checks pass. `npm run seed` and `npm run scale` could not be rerun in this restricted environment because no local PostgreSQL server is available and connections to localhost:5432 are blocked with `EPERM`.
+
+Material compliance findings:
+
+- History is not append-only in the implementation: employee-code changes execute `UPDATE history SET actor_id...` and `UPDATE history SET target_user_id...` in `src/server.js`. The seed and scale scripts also truncate history by design, which is acceptable only for rebuilding disposable demo data, not for an operational audit store.
+- `GET /jobs/for-me/:userId` does not fully use the centralized permission engine. Assigned maker/checker branches can return jobs without checking the user’s current role, branch, direction, or active grant, so the returned queue can contain jobs that `canAct()` would deny. This conflicts with the assignment’s “jobs waiting for me” consistency requirement and DESIGN.md question 13.
+- The action endpoint updates a job with `WHERE id=$2` after checking an earlier snapshot, without a conditional stage/ownership predicate or row lock. Concurrent actions can therefore pass stale authorization and overwrite a newer state, weakening timing/consistency guarantees.
+- Management routes implement role checks directly (`actor.role === 'admin'`) rather than routing all authorization decisions through the centralized permission engine. This is a maintainability/compliance gap against the project’s own AGENTS.md rule, even though the PDF permits design freedom.
+- No database trigger or restricted database role prevents direct UPDATE/DELETE of history rows, so append-only behavior is application-convention rather than an enforced invariant.
+
+The audit result is therefore **partially compliant, not ready to claim full requirement compliance**. The PDF’s main design questions, deliberate sample personas, API shape, documentation, and unit-level permission cases are substantially covered, but the findings above require correction and live PostgreSQL/API verification before final acceptance.
+
 ## Project objective
 
 Build a functional, tested, documented NFPL Access Control Service using Node.js, Express.js, PostgreSQL via `pg`, plain browser JavaScript, and `node:test`. The service must determine who may see and act on jobs, enforce maker/checker and scope rules, and maintain immutable audit history.
