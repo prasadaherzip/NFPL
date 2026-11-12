@@ -1,4 +1,4 @@
-const {openDatabase,initDatabase}=require('../src/db');
+import { openDatabase, initDatabase } from '../src/db.js';
 
 const branches=[['B1','Mumbai'],['B2','Delhi'],['B3','Kolkata'],['B4','Pune'],['B5','Nagpur']];
 const standard=[

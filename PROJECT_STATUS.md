@@ -1,5 +1,23 @@
 # NFPL Access Control Service — Project Status
 
+## Assignment compliance audit — 2026-11-12
+
+README updated to align with the attached PDF: it now documents the assignment scope, sample-data requirements, scale command, API, five-minute demo, verification commands, and direct answers to all 14 design questions. The README preserves the known audit limitations instead of claiming full production compliance.
+
+Audited the implementation against `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`, the supplied two-page assignment. The PDF is the effective source for this audit because `ASSIGNMENT_BRIEF.md` is not present in the current workspace despite prior status entries claiming it exists.
+
+Current verification: `npm test` passes 11/11 and all JavaScript syntax checks pass. `npm run seed` and `npm run scale` could not be rerun in this restricted environment because no local PostgreSQL server is available and connections to localhost:5432 are blocked with `EPERM`.
+
+Material compliance findings:
+
+- History is not append-only in the implementation: employee-code changes execute `UPDATE history SET actor_id...` and `UPDATE history SET target_user_id...` in `src/server.js`. The seed and scale scripts also truncate history by design, which is acceptable only for rebuilding disposable demo data, not for an operational audit store.
+- `GET /jobs/for-me/:userId` does not fully use the centralized permission engine. Assigned maker/checker branches can return jobs without checking the user’s current role, branch, direction, or active grant, so the returned queue can contain jobs that `canAct()` would deny. This conflicts with the assignment’s “jobs waiting for me” consistency requirement and DESIGN.md question 13.
+- The action endpoint updates a job with `WHERE id=$2` after checking an earlier snapshot, without a conditional stage/ownership predicate or row lock. Concurrent actions can therefore pass stale authorization and overwrite a newer state, weakening timing/consistency guarantees.
+- Management routes implement role checks directly (`actor.role === 'admin'`) rather than routing all authorization decisions through the centralized permission engine. This is a maintainability/compliance gap against the project’s own AGENTS.md rule, even though the PDF permits design freedom.
+- No database trigger or restricted database role prevents direct UPDATE/DELETE of history rows, so append-only behavior is application-convention rather than an enforced invariant.
+
+The audit result is therefore **partially compliant, not ready to claim full requirement compliance**. The PDF’s main design questions, deliberate sample personas, API shape, documentation, and unit-level permission cases are substantially covered, but the findings above require correction and live PostgreSQL/API verification before final acceptance.
+
 ## Project objective
 
 Build a functional, tested, documented NFPL Access Control Service using Node.js, Express.js, PostgreSQL via `pg`, plain browser JavaScript, and `node:test`. The service must determine who may see and act on jobs, enforce maker/checker and scope rules, and maintain immutable audit history.
@@ -19,6 +37,12 @@ Latest authorization rule: ADM can view jobs, manage users/access profiles, and 
 The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases. It creates 309 jobs, with additional sample jobs for KRC, PAM, and NCU.
 
 The dashboard now loads the selected user profile automatically; the separate `Load jobs` button was removed. Every profile receives the complete active-branch/client job list for presentation, and Client, branch, status, direction, mode, and job-number filters are manual. The selected profile still controls action authorization through the permission engine.
+
+On the `admincontrols` branch, Admin Controls can create a job with client, branch, direction, mode, stage, and maker/checker assignment fields. User editing now supports employee-code changes, updates all references transactionally, refreshes the homepage profile selector, and enforces that Active and Absent cannot both be selected. Job audit-history responses include the job reference.
+
+Job creation now selects one employee; the employee’s existing Maker, Checker, or Filer role determines the scoped permission grant for the new job. Admin Controls no longer asks for role checkboxes. The same user editor can create a new employee with code, name, role, branch, direction, client, Active, and Absent fields.
+
+The backend is now organized as ES-module MVC: `models` contain PostgreSQL queries, `controllers` implement request use cases, `routes` map HTTP endpoints, `services` provide transactions, `app.js` configures Express, and `server.js` only bootstraps the process. The frontend behavior and API endpoint contracts are preserved.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.

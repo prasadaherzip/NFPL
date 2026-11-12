@@ -1,4 +1,4 @@
-const test=require('node:test');const assert=require('node:assert/strict');const {canAct}=require('../src/permissions');
+import test from 'node:test';import assert from 'node:assert/strict';import { canAct } from '../src/permissions.js';
 const baseJob={client_id:'C1',branch_id:'B1',direction:'import',mode:'air',stage:'new',maker_id:null,checker_id:null,client_active:true,branch_active:true};
 const person=(id,role,branch='B1',direction='import')=>({id,name:id,role,branch_id:branch,direction,active:true,absent:false,client_id:null});
 test('maker can prepare only in assigned branch and direction',()=>{const u=person('MIM','maker');assert.equal(canAct(u,'prepare',baseJob).allowed,true);assert.equal(canAct(u,'check',{...baseJob,stage:'prepared'}).allowed,false);assert.equal(canAct(u,'file',{...baseJob,stage:'checked'}).allowed,false)});

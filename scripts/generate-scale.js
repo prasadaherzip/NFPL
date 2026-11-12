@@ -1,4 +1,4 @@
-const {openDatabase,initDatabase}=require('../src/db');
+import { openDatabase, initDatabase } from '../src/db.js';
 
 (async()=>{
   const db=openDatabase();
