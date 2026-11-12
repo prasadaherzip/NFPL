@@ -1,6 +1,10 @@
 import { openDatabase, initDatabase } from '../src/db.js';
+import { hashPassword } from '../src/services/authService.js';
 
 const branches=[['B1','Mumbai'],['B2','Delhi'],['B3','Kolkata'],['B4','Pune'],['B5','Nagpur']];
+const branchNames=Object.fromEntries(branches);
+const passwordCache=new Map();
+async function passwordHash(branchId, fallback='All branches'){const password=branchNames[branchId]||fallback;if(!passwordCache.has(password))passwordCache.set(password,await hashPassword(password));return passwordCache.get(password)}
 const standard=[
   ['MIM','Mumbai Import Maker','B1','import','maker'],['MIC','Mumbai Import Checker','B1','import','checker'],['MIF','Mumbai Import Filer','B1','import','filer'],
   ['MEM','Mumbai Export Maker','B1','export','maker'],['MEC','Mumbai Export Checker','B1','export','checker'],['MEF','Mumbai Export Filer','B1','export','filer'],
@@ -15,9 +19,9 @@ const standard=[
     await client.query('TRUNCATE history, grants, jobs, users, clients, branches RESTART IDENTITY CASCADE');
     for(const [id,name] of branches)await client.query('INSERT INTO branches(id,name) VALUES($1,$2)',[id,name]);
     for(let i=1;i<=10;i++)await client.query('INSERT INTO clients(id,name) VALUES($1,$2)',[`C${i}`,`Client ${i}`]);
-    await client.query("INSERT INTO users(id,name,role) VALUES('ADM','Admin','admin')");
+    await client.query("INSERT INTO users(id,name,role,password_hash) VALUES('ADM','Admin','admin',$1)",[await passwordHash(null)]);
     for(const [id,name,branchId,direction,role] of standard){
-      await client.query('INSERT INTO users(id,name,role,branch_id,direction) VALUES($1,$2,$3,$4,$5)',[id,name,role,branchId,direction]);
+      await client.query('INSERT INTO users(id,name,role,branch_id,direction,password_hash) VALUES($1,$2,$3,$4,$5,$6)',[id,name,role,branchId,direction,await passwordHash(branchId)]);
       const action=role==='maker'?'prepare':role==='checker'?'check':'file';
       await client.query('INSERT INTO grants(grantee_id,grantor_id,role,action,branch_id,direction) VALUES($1,$2,$3,$4,$5,$6)',[id,'ADM',role,action,branchId,direction]);
     }
@@ -28,7 +32,7 @@ const standard=[
       ['NCU','Nagpur Client User','client','C2','B5',null,false,false],
       ['PAR','Overnight Parser','system',null,null,null,false,true]
     ];
-    for(const [id,name,role,clientId,branchId,direction,absent,system] of special)await client.query('INSERT INTO users(id,name,role,client_id,branch_id,direction,absent,system_account) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[id,name,role,clientId,branchId,direction,absent,system]);
+    for(const [id,name,role,clientId,branchId,direction,absent,system] of special)await client.query('INSERT INTO users(id,name,role,client_id,branch_id,direction,absent,system_account,password_hash) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[id,name,role,clientId,branchId,direction,absent,system,await passwordHash(branchId,system?'System':'All branches')]);
     await client.query("INSERT INTO grants(grantee_id,grantor_id,role,action) VALUES('ABM','ADM','maker','prepare')");
     await client.query("INSERT INTO grants(grantee_id,grantor_id,role,action,client_id) VALUES('ABM','ADM','checker','check','C1'),('ABM','ADM','checker','check','C2')");
     await client.query("INSERT INTO grants(grantee_id,grantor_id,role,action,client_id,branch_id,direction) VALUES('KRC','ADM','checker','check','C1','B3','import')");
