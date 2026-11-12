@@ -6,7 +6,7 @@ Use this document as the complete rebuild instruction for Claude in Antigravity.
 
 ### Database variation requested by the user
 
-The official brief specifies SQLite with better-sqlite3. This rebuild handoff intentionally changes the database to PostgreSQL. Record this as a scope deviation in DESIGN.md and README.md. If the assignment is graded strictly against the brief, retain the SQLite implementation instead.
+The official brief specifies SQLite with better-sqlite3. This rebuild handoff intentionally changes the database to PostgreSQL. The current workspace now uses the PostgreSQL implementation; this remains a documented scope deviation in DESIGN.md, PROJECT_STATUS.md, and README.md.
 
 Build the complete working application incrementally. Do not create a mock, replace the stack, or skip verification.
 

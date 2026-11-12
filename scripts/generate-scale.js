@@ -1,20 +1,3 @@
-const {openDatabase,dataDir}=require('../src/db');
-const path=require('node:path');
-const scalePath=path.join(dataDir,'scale.db');
-const db=openDatabase(scalePath);
-db.exec('DELETE FROM history; DELETE FROM grants; DELETE FROM jobs; DELETE FROM users; DELETE FROM clients; DELETE FROM branches;');
-const tx=db.transaction(()=>{
-  const b=db.prepare('INSERT INTO branches VALUES(?,?,1)');
-  const c=db.prepare('INSERT INTO clients VALUES(?,?,1)');
-  const u=db.prepare("INSERT INTO users(id,name,role,branch_id,active,absent,system_account) VALUES(?,?,?, ?,1,0,0)");
-  const j=db.prepare('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage,maker_id,checker_id) VALUES(?,?,?,?,?,?,?,?)');
-  const branchNames=['Mumbai','Delhi','Nagpur','Pune','Gujrat'];
-  for(let i=1;i<=5;i++)b.run(`B${i}`,branchNames[i-1]);
-  for(let i=1;i<=20;i++)c.run(`C${i}`,`Client ${i}`);
-  for(let i=1;i<=500;i++)u.run(`u${i}`,`User ${i}`,i%2?'maker':'checker',`B${i%5+1}`);
-  for(let i=1;i<=200000;i++)j.run(`SCALE-${i}`,`C${i%20+1}`,`B${i%5+1}`,i%2?'import':'export',['air','fcl','lcl'][i%3],['new','prepared','checked','filed'][i%4],`u${i%500+1}`,`u${(i+1)%500+1}`);
-});
-const start=performance.now(); tx(); const duration=performance.now()-start;
-const q=performance.now(); const n=db.prepare("SELECT count(*) n FROM jobs WHERE branch_id=? AND stage IN ('new','reopened')").get('B1').n;
-console.log(JSON.stringify({users:500,jobs:200000,insertMs:Math.round(duration),queryMs:Math.round(performance.now()-q),matchingJobs:n,db:scalePath},null,2));
-db.close();
+const {openDatabase,initDatabase}=require('../src/db');
+
+(async()=>{const db=openDatabase();await initDatabase(db);const client=await db.connect();try{await client.query('BEGIN');await client.query('TRUNCATE history, grants, jobs, users, clients, branches RESTART IDENTITY CASCADE');const branchNames=['Mumbai','Delhi','Nagpur','Pune','Gujrat'];for(let i=1;i<=5;i++)await client.query('INSERT INTO branches(id,name) VALUES($1,$2)',[`B${i}`,branchNames[i-1]]);for(let i=1;i<=20;i++)await client.query('INSERT INTO clients(id,name) VALUES($1,$2)',[`C${i}`,`Client ${i}`]);for(let i=1;i<=500;i++)await client.query('INSERT INTO users(id,name,role,branch_id) VALUES($1,$2,$3,$4)',[`u${i}`,`User ${i}`,i%2?'maker':'checker',`B${i%5+1}`]);const start=performance.now();for(let i=1;i<=200000;i++)await client.query('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage,maker_id,checker_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[`SCALE-${i}`,`C${i%20+1}`,`B${i%5+1}`,i%2?'import':'export',['air','fcl','lcl'][i%3],['new','prepared','checked','filed'][i%4],`u${i%500+1}`,`u${(i+1)%500+1}`]);await client.query('COMMIT');const duration=performance.now()-start;const queryStart=performance.now();const result=await db.query("SELECT count(*)::int n FROM jobs WHERE branch_id=$1 AND stage IN ('new','reopened')",['B1']);console.log(JSON.stringify({users:500,jobs:200000,insertMs:Math.round(duration),queryMs:Math.round(performance.now()-queryStart),matchingJobs:result.rows[0].n,db:'PostgreSQL'},null,2))}catch(error){await client.query('ROLLBACK');throw error}finally{client.release();await db.end()}})().catch(error=>{console.error(error);process.exitCode=1});

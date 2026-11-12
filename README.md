@@ -4,9 +4,13 @@
 
 ```sh
 npm install
+createdb nfpl
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/nfpl
 npm run seed
 npm start
 ```
+
+The application uses PostgreSQL through the `pg` connection pool. Set `DATABASE_URL` for the local PostgreSQL instance before running the seed or server commands. The schema is initialized automatically. This is a deliberate deviation from the supplied assignment brief, which specified SQLite.
 
 Open http://localhost:3000. The demo uses request-supplied IDs as identity selectors; this is explicitly not authentication.
 
@@ -38,4 +42,4 @@ The sample JSON files under `data/` document the deliberate small dataset; `npm 
 
 ## Verification
 
-`npm test` runs the permission scenarios. `npm run scale` creates a deterministic 500-user/200,000-job database and reports insertion/query timings.
+`npm test` runs the permission scenarios. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.

@@ -2,7 +2,11 @@
 
 ## Project objective
 
-Build a functional, tested, documented NFPL Access Control Service using Node.js, Express.js, SQLite via better-sqlite3, plain browser JavaScript, and `node:test`. The service must determine who may see and act on jobs, enforce maker/checker and scope rules, and maintain immutable audit history.
+Build a functional, tested, documented NFPL Access Control Service using Node.js, Express.js, PostgreSQL via `pg`, plain browser JavaScript, and `node:test`. The service must determine who may see and act on jobs, enforce maker/checker and scope rules, and maintain immutable audit history.
+
+## User-requested architecture change
+
+The supplied assignment brief specifies SQLite via better-sqlite3. The user explicitly requested PostgreSQL while preserving the rest of the behavior, so the implementation now uses PostgreSQL with parameterized queries, pooled connections, PostgreSQL constraints/indexes, and transactional state changes plus audit writes. This is a documented scope deviation from the brief.
 
 ## Current implementation phase
 
@@ -198,6 +202,8 @@ See `DESIGN.md` for the reconciled answers to all 14 questions, assumptions, tra
 
 ## Current blockers
 
+- PostgreSQL migration completed and verified locally with PostgreSQL 15: seed created 300 jobs and 20 users; `/health`, `/users`, and `/jobs/for-me/admin` returned successfully, with 20 users and 300 Admin-visible jobs. The full permission test suite remains 9/9 passing.
+
 - Added a plain-language role definition beneath the selected user in the dashboard. Definitions are specific to Asha, Maya, Ravi, Absent Owner, and Client User.
 - Moved the selected user's role definition to the bottom of the Actions panel.
 - Formatted the Actions-panel role definition as a distinct bottom section with a label, spacing, border, and readable text styling.
@@ -205,6 +211,7 @@ See `DESIGN.md` for the reconciled answers to all 14 questions, assumptions, tra
 - Fixed the jobs-for-me query so Admin users can see all active-client and active-branch jobs, including jobs not assigned to them.
 - Added an Admin Controls tab for Asha. It loads all seeded users and generated employees from `GET /users` and displays role, scope, status, and plain-language assignment instructions.
 - Improved Admin Controls loading feedback when an outdated server process returns the HTML page instead of the `/users` JSON response.
+- Updated job numbers to use bold blue SF Pro styling consistent with the emphasized total job count.
 
 Only live HTTP smoke testing remains blocked by the restricted execution environment. A screenshot-driven policy mismatch was fixed: explicit job assignment now takes precedence over default branch scope, and assigned checkers may file checked jobs.
 

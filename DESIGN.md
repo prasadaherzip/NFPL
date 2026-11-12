@@ -25,4 +25,8 @@ The demo has no authentication middleware; user IDs in URLs/bodies are a deliber
 13. Jobs-for-me is filtered in SQL using the same role, scope, stage, assignment, absence, and maker/checker constraints that the permission engine applies. The action endpoint still rechecks at execution time.
 14. Uncertainty fails closed with a reason. Unknown users, jobs, actions, inactive entities, absent users, and invalid state transitions are denied or rejected.
 
-Access changes are immediate: active grants are read on each request and revocations set `active=0` transactionally. SQLite indexes support the 200,000-job scale target. The demo frontend is intentionally simple; grant management is provided through the API.
+Access changes are immediate: active grants are read on each request and revocations set `active=FALSE` transactionally. PostgreSQL indexes support the 200,000-job scale target. The demo frontend is intentionally simple; grant management is provided through the API.
+
+## PostgreSQL migration
+
+The user requested PostgreSQL instead of the SQLite stack specified by the assignment. The implementation uses the `pg` pool, `DATABASE_URL`, PostgreSQL constraints and indexes, parameterized `$1` queries, and transactions that include both job state changes and audit-history writes. The frontend and permission behavior remain unchanged.
