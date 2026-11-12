@@ -52,7 +52,7 @@ There are 18 users total. All standard teams initially cover all ten clients wit
 - `GET /users`
 - `POST /users` — admin-only user creation
 - `PATCH /users/:id` — admin-only profile/access update
-- `POST /jobs` — admin-only job creation with assignment and workflow fields
+- `POST /jobs` — admin-only job creation with assignment and workflow fields; the selected employee’s existing role receives the scoped permission
 - `GET /users/:id/history` — administrative history
 - `GET /grants?actorId=ADM` — admin-only grant listing
 - `POST /grants` — admin-only grant creation
