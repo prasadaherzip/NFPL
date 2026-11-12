@@ -19,6 +19,7 @@ The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, a
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
 - ADM can now update their own role, branch, direction, client scope, active status, and absence through the audited modal; ordinary grant self-escalation remains blocked.
+- Removed the Emp ID column from the jobs table. Added explicit seeded jobs for ABM, KRC, PAM, and NCU; PAM's assigned jobs remain hidden from action queues while absent.
 - Changed Admin Controls user editing to a modal window opened by clicking the user's name. The modal controls role, branch, direction, client scope, active status, and absence.
 - Removed the Manage Grants section from the Admin Controls interface; the user-edit modal remains the admin control surface.
 

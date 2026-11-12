@@ -35,10 +35,12 @@ const standard=[
     await client.query("INSERT INTO grants(grantee_id,grantor_id,role,action,branch_id) VALUES('PAM','ADM','maker','prepare','B4')");
     const stages=['confirmed','new','prepared','checked','filed','cancelled','reopened'];
     for(let i=1;i<=300;i++){
-      let branchId=`B${i%5+1}`,direction=i%2?'import':'export',stage=stages[i%stages.length],clientId=`C${i%10+1}`;
-      if(i===1){clientId='C1';branchId='B3';direction='import';stage='prepared'}
+      let branchId=`B${i%5+1}`,direction=i%2?'import':'export',stage=stages[i%stages.length],clientId=`C${i%10+1}`,makerId=null,checkerId=null;
+      if(i===1){clientId='C1';branchId='B3';direction='import';stage='prepared';checkerId='KRC'}
       if(i===2){clientId='C2';branchId='B5';direction='import';stage='new'}
-      await client.query('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage) VALUES($1,$2,$3,$4,$5,$6)',[`JOB-${String(i).padStart(4,'0')}`,clientId,branchId,direction,['air','fcl','lcl'][i%3],stage]);
+      if(i===3){clientId='C3';branchId='B4';direction='export';stage='new';makerId='PAM'}
+      if(i===4){clientId='C4';branchId='B5';direction='export';stage='new';makerId='ABM'}
+      await client.query('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage,maker_id,checker_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[`JOB-${String(i).padStart(4,'0')}`,clientId,branchId,direction,['air','fcl','lcl'][i%3],stage,makerId,checkerId]);
     }
     await client.query("INSERT INTO history(actor_id,job_id,action,new_state,permission_allowed,permission_reason) SELECT 'ADM',id,'job_created',stage,TRUE,'Initial sample job creation.' FROM jobs");
     await client.query('COMMIT');console.log('Seeded 300 jobs, 18 users, 5 branches, 10 clients, and standard plus special grants.');
