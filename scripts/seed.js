@@ -42,7 +42,13 @@ const standard=[
       if(i===4){clientId='C4';branchId='B5';direction='export';stage='new';makerId='ABM'}
       await client.query('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage,maker_id,checker_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[`JOB-${String(i).padStart(4,'0')}`,clientId,branchId,direction,['air','fcl','lcl'][i%3],stage,makerId,checkerId]);
     }
+    const specialJobs=[
+      ['JOB-0301','C1','B3','import','air','prepared',null,'KRC'],['JOB-0302','C1','B3','import','fcl','checked',null,'KRC'],['JOB-0303','C1','B3','import','lcl','prepared',null,'KRC'],
+      ['JOB-0304','C5','B4','import','air','new','PAM',null],['JOB-0305','C6','B4','export','fcl','confirmed','PAM',null],['JOB-0306','C7','B4','export','lcl','reopened','PAM',null],
+      ['JOB-0307','C2','B5','import','air','new',null,null],['JOB-0308','C2','B5','export','fcl','prepared',null,null],['JOB-0309','C2','B5','import','lcl','checked',null,null]
+    ];
+    for(const row of specialJobs)await client.query('INSERT INTO jobs(reference,client_id,branch_id,direction,mode,stage,maker_id,checker_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',row);
     await client.query("INSERT INTO history(actor_id,job_id,action,new_state,permission_allowed,permission_reason) SELECT 'ADM',id,'job_created',stage,TRUE,'Initial sample job creation.' FROM jobs");
-    await client.query('COMMIT');console.log('Seeded 300 jobs, 18 users, 5 branches, 10 clients, and standard plus special grants.');
+    await client.query('COMMIT');console.log('Seeded 309 jobs, 18 users, 5 branches, 10 clients, and standard plus special grants.');
   }catch(error){await client.query('ROLLBACK');throw error}finally{client.release();await db.end()}
 })().catch(error=>{console.error(error);process.exitCode=1});

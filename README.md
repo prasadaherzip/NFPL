@@ -44,7 +44,7 @@ There are 18 users total. All standard teams initially cover all ten clients wit
 
 ## Workflow and permissions
 
-`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, and Filers can file only. Admin manages access and profiles but cannot perform operational job actions. Branch, direction, client scope, role, stage, active status, and absence are enforced. The maker/checker separation rule prevents the preparer from checking the same job. Confirmation is treated as job creation/system setup because no separate confirmation role is specified.
+`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check, cancel, or send a job back for preparation, and Filers can file only. Admin can manage access and perform operational job actions. Branch, direction, client scope, role, stage, active status, and absence are enforced. The maker/checker separation rule prevents the preparer from checking the same job. Confirmation is treated as job creation/system setup because no separate confirmation role is specified.
 
 ## API
 
@@ -76,4 +76,4 @@ All SQL is parameterized. User and grant changes are transactional with append-o
 
 ## Verification
 
-`npm test` runs the permission scenarios. `npm run seed` creates 18 users, five branches, ten clients, and 300 jobs. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.
+`npm test` runs the permission scenarios. `npm run seed` creates 18 users, five branches, ten clients, and 309 jobs, including additional KRC, PAM, and NCU examples. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.
