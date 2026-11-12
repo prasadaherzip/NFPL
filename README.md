@@ -1,0 +1,41 @@
+# NFPL Access Control Service
+
+## Run
+
+```sh
+npm install
+npm run seed
+npm start
+```
+
+Open http://localhost:3000. The demo uses request-supplied IDs as identity selectors; this is explicitly not authentication.
+
+Important endpoints: `GET /jobs/for-me/:userId`, `GET /check?userId=...&jobId=...&action=...`, `POST /jobs/:id/actions`, `GET /jobs/:id/history`, `POST /grants`, and `DELETE /grants/:id`.
+
+Sample access list:
+
+- Asha has role Admin for any client, any branch, any direction, and any mode.
+- Maya has role Maker for any client, any branch, any direction, and any mode; she is also Checker for Client 1 and for Client 2 imports.
+- Ravi Checker has role Checker for Client 2, Branch 2, imports only, any mode.
+- Absent Owner has role Maker for any client, Branch 1, any direction, and any mode, but is absent and cannot act.
+- Client User has role ClientViewer for Client 1, any branch, direction, and mode.
+- Overnight Parser has role System for import jobs only; it cannot perform human workflow actions.
+
+Branches are Mumbai (B1), Delhi (B2), Nagpur (B3), Pune (B4), and Gujrat (B5).
+
+## What each user can do
+
+- **Asha [Admin]:** may prepare, check, file, cancel, and reopen jobs. She can create and revoke grants for other users, but cannot grant herself a new role. Every administrative change is audited.
+- **Maya [Maker + Checker]:** may prepare jobs for any client, branch, direction, and mode. She may check only Client 1 jobs and Client 2 import jobs. She cannot check a job she prepared herself.
+- **Ravi [Restricted Checker]:** may check Client 2 imports at the Delhi branch only. He cannot check other clients, branches, or exports. He can file work assigned to him after it has been checked.
+- **Absent Owner [Maker]:** has a Maker assignment, but absence blocks every action until the user becomes active.
+- **Client User [ClientViewer]:** may follow Client 1 jobs but cannot perform internal workflow actions.
+- **Overnight Parser [System]:** is a background account, not a dashboard user. It may import incoming shipment data and cannot check, file, cancel, or reopen jobs.
+
+The dashboard shows one person for each required access pattern. Redundant role variants were removed from the visible selector; the required distinctions are represented by Maya's multiple grants and Ravi's restricted grant.
+
+The sample JSON files under `data/` document the deliberate small dataset; `npm run seed` generates the larger reproducible demo dataset and applies the grants above.
+
+## Verification
+
+`npm test` runs the permission scenarios. `npm run scale` creates a deterministic 500-user/200,000-job database and reports insertion/query timings.

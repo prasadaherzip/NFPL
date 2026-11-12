@@ -1,0 +1,2 @@
+function recordHistory(db,e){return db.prepare(`INSERT INTO history(actor_id,job_id,grant_id,action,previous_state,new_state,permission_allowed,permission_reason) VALUES(@actor_id,@job_id,@grant_id,@action,@previous_state,@new_state,@permission_allowed,@permission_reason)`).run({actor_id:e.actorId,job_id:e.jobId??null,grant_id:e.grantId??null,action:e.action,previous_state:e.previousState??null,new_state:e.newState??null,permission_allowed:e.allowed?1:0,permission_reason:e.reason});}
+module.exports={recordHistory};

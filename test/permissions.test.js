@@ -1,0 +1,11 @@
+const test=require('node:test'); const assert=require('node:assert/strict'); const {canAct}=require('../src/permissions');
+const job={client_id:'C1',branch_id:'B1',direction:'import',mode:'air',stage:'new',maker_id:'m1',checker_id:'c1',client_active:1,branch_active:1}; const base={active:1,absent:0,client_id:null,branch_id:'B1'};
+test('maker cannot check own job',()=>assert.equal(canAct({...base,id:'m1',name:'Maker',role:'maker'},'check',job).allowed,false));
+test('absent owner is denied',()=>assert.equal(canAct({...base,id:'m1',name:'Absent',role:'maker',absent:1},'prepare',job).allowed,false));
+test('changed responsibility denies old maker',()=>assert.equal(canAct({...base,id:'m2',name:'New',role:'maker'},'prepare',job).allowed,false));
+test('assigned maker may prepare across branch scope',()=>assert.equal(canAct({...base,id:'m1',name:'Maker',role:'maker',branch_id:'B9'},'prepare',job).allowed,true));
+test('filed jobs cannot be checked',()=>assert.equal(canAct({...base,id:'c1',name:'Checker',role:'checker'},'check',{...job,stage:'filed'}).allowed,false));
+test('assigned checker may file a checked job',()=>assert.equal(canAct({...base,id:'c1',name:'Checker',role:'checker'},'file',{...job,stage:'checked'}).allowed,true));
+test('admin cannot self-grant through normal permission',()=>assert.equal(canAct({...base,id:'a',name:'Admin',role:'admin'},'reopen',{...job,stage:'cancelled'}).allowed,true));
+test('parser may import but not check',()=>{const p={...base,id:'p',name:'Parser',role:'system'}; assert.equal(canAct(p,'import',job).allowed,true); assert.equal(canAct(p,'check',job).allowed,false)});
+test('scoped grant matches',()=>{const u={...base,id:'c2',name:'Checker',role:'checker'}; assert.equal(canAct(u,'check',{...job,stage:'prepared',maker_id:'m2',checker_id:null},[{active:1,role:'checker',action:'check',client_id:'C1',branch_id:'B1'}]).allowed,true)});

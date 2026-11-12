@@ -1,0 +1,5 @@
+[
+  {"grantee_id":"maker1","grantor_id":"admin","role":"checker","action":"check","client_id":"C1"},
+  {"grantee_id":"maker1","grantor_id":"admin","role":"checker","action":"check","client_id":"C2","direction":"import"},
+  {"grantee_id":"checker2","grantor_id":"admin","role":"checker","action":"check","client_id":"C2","branch_id":"B2","direction":"import"}
+]
