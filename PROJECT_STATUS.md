@@ -204,6 +204,7 @@ See `DESIGN.md` for the reconciled answers to all 14 questions, assumptions, tra
 - Added the Overnight Parser to the dashboard user selector with a System role definition; it remains restricted to import-only behavior by the centralized permission engine.
 - Fixed the jobs-for-me query so Admin users can see all active-client and active-branch jobs, including jobs not assigned to them.
 - Added an Admin Controls tab for Asha. It loads all seeded users and generated employees from `GET /users` and displays role, scope, status, and plain-language assignment instructions.
+- Improved Admin Controls loading feedback when an outdated server process returns the HTML page instead of the `/users` JSON response.
 
 Only live HTTP smoke testing remains blocked by the restricted execution environment. A screenshot-driven policy mismatch was fixed: explicit job assignment now takes precedence over default branch scope, and assigned checkers may file checked jobs.
 
