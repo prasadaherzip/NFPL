@@ -25,6 +25,8 @@ Sample access list:
 - Client User has role ClientViewer for Client 1, any branch, direction, and mode.
 - Overnight Parser has role System for import jobs only; it cannot perform human workflow actions.
 
+The seeded PostgreSQL demo also creates 45 scoped permission users: for each of Mumbai, Delhi, Nagpur, Pune, and Gujrat there is a Maker, Checker, and Filer for Import, Export, and Both directions. “Both” is represented by separate Import and Export grants. These users are visible in Asha's Admin Controls tab.
+
 Branches are Mumbai (B1), Delhi (B2), Nagpur (B3), Pune (B4), and Gujrat (B5).
 
 ## What each user can do
@@ -38,7 +40,7 @@ Branches are Mumbai (B1), Delhi (B2), Nagpur (B3), Pune (B4), and Gujrat (B5).
 
 The dashboard shows one person for each required access pattern. Redundant role variants were removed from the visible selector; the required distinctions are represented by Maya's multiple grants and Ravi's restricted grant.
 
-The sample JSON files under `data/` document the deliberate small dataset; `npm run seed` generates the larger reproducible demo dataset and applies the grants above.
+The sample JSON files under `data/` document the core persona dataset; `npm run seed` generates the reproducible PostgreSQL demo dataset with 51 users, 300 jobs, and the grants above.
 
 ## Verification
 

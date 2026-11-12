@@ -30,3 +30,5 @@ Access changes are immediate: active grants are read on each request and revocat
 ## PostgreSQL migration
 
 The user requested PostgreSQL instead of the SQLite stack specified by the assignment. The implementation uses the `pg` pool, `DATABASE_URL`, PostgreSQL constraints and indexes, parameterized `$1` queries, and transactions that include both job state changes and audit-history writes. The frontend and permission behavior remain unchanged.
+
+The seed also includes a distinct Filer role. A Filer can file checked jobs only, and branch/direction scope is represented as Import, Export, or two grants for Both.

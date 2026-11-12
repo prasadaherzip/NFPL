@@ -25,6 +25,7 @@ function canAct(user, action, job, grants=[]) {
   if (match) return {allowed:true,reason:`Active ${match.role} grant matches this job.`};
   if (action==='prepare'&&user.role==='maker'&&job.maker_id===user.id) return {allowed:true,reason:'Maker is assigned to this job.'};
   if (['check','file'].includes(action)&&user.role==='checker'&&job.checker_id===user.id) return {allowed:true,reason:'Checker is assigned to this job.'};
+  if (action==='file'&&user.role==='filer'&&(!user.branch_id||user.branch_id===job.branch_id)) return {allowed:true,reason:'Filer is assigned to this branch.'};
   if (action==='prepare'&&user.role==='maker'&&!job.maker_id&&(!user.branch_id||user.branch_id===job.branch_id)) return {allowed:true,reason:'Maker is assigned to this branch.'};
   if (['check','file'].includes(action)&&user.role==='checker'&&!job.checker_id&&(!user.branch_id||user.branch_id===job.branch_id)) return {allowed:true,reason:'Checker is assigned to this branch.'};
   if (action===job.direction&&user.role==='maker') return {allowed:true,reason:`Maker may perform ${action} on this job.`};
