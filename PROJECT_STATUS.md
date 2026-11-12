@@ -203,6 +203,7 @@ See `DESIGN.md` for the reconciled answers to all 14 questions, assumptions, tra
 ## Current blockers
 
 - PostgreSQL migration completed and verified locally with PostgreSQL 15: seed created 300 jobs and 20 users; `/health`, `/users`, and `/jobs/for-me/admin` returned successfully, with 20 users and 300 Admin-visible jobs. The full permission test suite remains 9/9 passing.
+- Added a top header Job No. search field supporting `J1`, `1`, and `JOB-0001` formats; it filters the selected user's loaded jobs without changing the existing scope filters.
 
 - Added a plain-language role definition beneath the selected user in the dashboard. Definitions are specific to Asha, Maya, Ravi, Absent Owner, and Client User.
 - Moved the selected user's role definition to the bottom of the Actions panel.
