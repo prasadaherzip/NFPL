@@ -12,12 +12,13 @@ The supplied assignment brief specifies SQLite via better-sqlite3. The user expl
 
 The PDF was read from `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`. It describes the core workflow and edge cases. The corrected user-provided specification now requires five branches, standard teams only in Mumbai and Delhi, and 18 users including ABM, KRC, PAM, NCU, ADM, and PAR. The existing `ASSIGNMENT_BRIEF.md` was present despite the pasted instructions saying it was missing; this discrepancy is documented in `DESIGN.md`.
 
-The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, `GET /users/:id/history`, and `GET /grants` endpoints. Profile/access and grant updates are parameterized, transactional, and append audit events with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, absence, and create/revoke grants.
+The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, `GET /users/:id/history`, and `GET /grants` endpoints. Profile/access and grant updates are parameterized, transactional, and append audit events with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, and absence. ADM may update their own profile/access fields; ordinary grant self-escalation remains blocked.
 
 The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
+- ADM can now update their own role, branch, direction, client scope, active status, and absence through the audited modal; ordinary grant self-escalation remains blocked.
 - Changed Admin Controls user editing to a modal window opened by clicking the user's name. The modal controls role, branch, direction, client scope, active status, and absence.
 - Removed the Manage Grants section from the Admin Controls interface; the user-edit modal remains the admin control surface.
 

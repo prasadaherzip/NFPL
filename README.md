@@ -61,7 +61,7 @@ There are 18 users total. All standard teams initially cover all ten clients wit
 - `POST /jobs/:id/actions`
 - `GET /jobs/:id/history`
 
-All SQL is parameterized. User and grant changes are transactional with append-only history containing actor, target, change details, reason, and timestamp. Admins cannot change their own access or status through the user-management API.
+All SQL is parameterized. User and grant changes are transactional with append-only history containing actor, target, change details, reason, and timestamp. ADM can update their own profile/access fields through the audited user-management API; ordinary grant self-escalation remains blocked.
 
 ## Demo
 
@@ -71,7 +71,7 @@ All SQL is parameterized. User and grant changes are transactional with append-o
 4. Select `KRC`; try a non-Kolkata, non-Import, or non-Client-1 job and show the denial reason.
 5. Select `PAM`; show that absence removes all actionable jobs.
 6. Select `NCU`; show the restricted client-side view and greyed internal actions.
-7. Select `ADM`, open Admin Controls, edit a profile, create/revoke a grant, and show audit history.
+7. Select `ADM`, open Admin Controls, click a user name, edit a profile or ADM's own access, and show the audit history.
 8. Select a job and show its append-only history.
 
 ## Verification
