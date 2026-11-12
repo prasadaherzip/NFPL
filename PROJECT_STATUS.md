@@ -19,6 +19,7 @@ The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, a
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
 - Changed Admin Controls user editing to a modal window opened by clicking the user's name. The modal controls role, branch, direction, client scope, active status, and absence.
+- Removed the Manage Grants section from the Admin Controls interface; the user-edit modal remains the admin control surface.
 
 Verification of the corrected specification used a separate `nfpl_corrected` PostgreSQL database: `npm run seed` created 18 users, 5 branches, 10 clients, 300 jobs, and 17 grants; API smoke tests returned 18 users, one KRC queue job, one NCU client-visible job, zero PAM jobs because of absence, and a successful grant listing. `npm test` passes 11/11.
 
