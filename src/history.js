@@ -1,2 +1,2 @@
 async function recordHistory(db,e){const result=await db.query(`INSERT INTO history(actor_id,target_user_id,job_id,grant_id,action,previous_state,new_state,change_details,permission_allowed,permission_reason) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,[e.actorId,e.targetUserId??null,e.jobId??null,e.grantId??null,e.action,e.previousState??null,e.newState??null,e.changeDetails??null,Boolean(e.allowed),e.reason]);return result.rows[0];}
-module.exports={recordHistory};
+export { recordHistory };

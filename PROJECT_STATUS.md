@@ -2,6 +2,8 @@
 
 ## Assignment compliance audit — 2026-11-12
 
+README updated to align with the attached PDF: it now documents the assignment scope, sample-data requirements, scale command, API, five-minute demo, verification commands, and direct answers to all 14 design questions. The README preserves the known audit limitations instead of claiming full production compliance.
+
 Audited the implementation against `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`, the supplied two-page assignment. The PDF is the effective source for this audit because `ASSIGNMENT_BRIEF.md` is not present in the current workspace despite prior status entries claiming it exists.
 
 Current verification: `npm test` passes 11/11 and all JavaScript syntax checks pass. `npm run seed` and `npm run scale` could not be rerun in this restricted environment because no local PostgreSQL server is available and connections to localhost:5432 are blocked with `EPERM`.
@@ -39,6 +41,8 @@ The dashboard now loads the selected user profile automatically; the separate `L
 On the `admincontrols` branch, Admin Controls can create a job with client, branch, direction, mode, stage, and maker/checker assignment fields. User editing now supports employee-code changes, updates all references transactionally, refreshes the homepage profile selector, and enforces that Active and Absent cannot both be selected. Job audit-history responses include the job reference.
 
 Job creation now selects one employee; the employee’s existing Maker, Checker, or Filer role determines the scoped permission grant for the new job. Admin Controls no longer asks for role checkboxes. The same user editor can create a new employee with code, name, role, branch, direction, client, Active, and Absent fields.
+
+The backend is now organized as ES-module MVC: `models` contain PostgreSQL queries, `controllers` implement request use cases, `routes` map HTTP endpoints, `services` provide transactions, `app.js` configures Express, and `server.js` only bootstraps the process. The frontend behavior and API endpoint contracts are preserved.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.

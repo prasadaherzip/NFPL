@@ -1,4 +1,6 @@
-const { Pool } = require('pg');
+import pg from 'pg';
+
+const { Pool } = pg;
 
 function openDatabase() {
   return new Pool({ connectionString: process.env.DATABASE_URL || 'postgres://localhost/nfpl' });
@@ -22,4 +24,4 @@ async function initDatabase(db) {
   await db.query(`INSERT INTO history(actor_id,job_id,action,previous_state,new_state,permission_allowed,permission_reason) SELECT COALESCE(j.maker_id,'admin'),j.id,'job_created',NULL,j.stage,TRUE,'Initial sample job creation.' FROM jobs j WHERE NOT EXISTS (SELECT 1 FROM history h WHERE h.job_id=j.id)`);
 }
 
-module.exports = { openDatabase, initDatabase };
+export { openDatabase, initDatabase };

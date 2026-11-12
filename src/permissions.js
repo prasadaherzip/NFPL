@@ -35,4 +35,4 @@ function canAct(user,action,job,grants=[]){
   if(['check','send_back'].includes(action)&&user.role==='checker'&&(!job.checker_id||job.checker_id===user.id)&&(!user.branch_id||user.branch_id===job.branch_id))return{allowed:true,reason:action==='send_back'?'Checker may send this job back for preparation.':'Checker is assigned to this branch.'};
   return{allowed:false,reason:`No active ${user.role} permission matches this action and job scope.`};
 }
-module.exports={canAct,scopeMatches,ACTIONS};
+export { canAct, scopeMatches, ACTIONS };
