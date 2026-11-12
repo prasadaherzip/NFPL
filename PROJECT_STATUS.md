@@ -22,6 +22,8 @@ The dashboard now loads the selected user profile automatically; the separate `L
 
 On the `admincontrols` branch, Admin Controls can create a job with client, branch, direction, mode, stage, and maker/checker assignment fields. User editing now supports employee-code changes, updates all references transactionally, refreshes the homepage profile selector, and enforces that Active and Absent cannot both be selected. Job audit-history responses include the job reference.
 
+Job creation now selects one employee and one or more roles (Maker, Checker, and/or Filer). Each selected role creates a scoped permission grant for the new job; Maker and Checker assignments are also stored on the job record.
+
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
 - ADM can now update their own role, branch, direction, client scope, active status, and absence through the audited modal; ordinary grant self-escalation remains blocked.
