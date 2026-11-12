@@ -17,6 +17,7 @@ The current implementation also adds admin-only `POST /users`, `PATCH /users/:id
 The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
+- Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
 
 Verification of the corrected specification used a separate `nfpl_corrected` PostgreSQL database: `npm run seed` created 18 users, 5 branches, 10 clients, 300 jobs, and 17 grants; API smoke tests returned 18 users, one KRC queue job, one NCU client-visible job, zero PAM jobs because of absence, and a successful grant listing. `npm test` passes 11/11.
 
