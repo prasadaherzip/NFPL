@@ -7,41 +7,67 @@ npm install
 createdb nfpl
 export DATABASE_URL=postgres://postgres:postgres@localhost:5432/nfpl
 npm run seed
+npm test
 npm start
 ```
 
-The application uses PostgreSQL through the `pg` connection pool. Set `DATABASE_URL` for the local PostgreSQL instance before running the seed or server commands. The schema is initialized automatically. This is a deliberate deviation from the supplied assignment brief, which specified SQLite.
-
 Open http://localhost:3000. The demo uses request-supplied IDs as identity selectors; this is explicitly not authentication.
 
-Important endpoints: `GET /jobs/for-me/:userId`, `GET /check?userId=...&jobId=...&action=...`, `POST /jobs/:id/actions`, `GET /jobs/:id/history`, `POST /grants`, and `DELETE /grants/:id`.
+The application uses PostgreSQL through the `pg` connection pool. The schema is initialized automatically. This is a deliberate deviation from the PDF, which permits any storage but the earlier workspace brief specified SQLite.
 
-Sample access list:
+## Sample users
 
-- Asha has role Admin for any client, any branch, any direction, and any mode.
-- Maya has role Maker for any client, any branch, any direction, and any mode; she is also Checker for Client 1 and for Client 2 imports.
-- Ravi Checker has role Checker for Client 2, Branch 2, imports only, any mode.
-- Absent Owner has role Maker for any client, Branch 1, any direction, and any mode, but is absent and cannot act.
-- Client User has role ClientViewer for Client 1, any branch, direction, and mode.
-- Overnight Parser has role System for import jobs only; it cannot perform human workflow actions.
+There are two branches: Mumbai and Delhi. Each branch has Import and Export teams. Each team has a Maker, Checker, and Filer, plus one Admin:
 
-The seeded PostgreSQL demo also creates 45 scoped permission users: for each of Mumbai, Delhi, Nagpur, Pune, and Gujrat there is a Maker, Checker, and Filer for Import, Export, and Both directions. “Both” is represented by separate Import and Export grants. These users are visible in Asha's Admin Controls tab.
+| Name | Code | Branch | Direction | Role |
+|---|---|---|---|---|
+| Mumbai Import Maker | MIM | Mumbai | Import | Maker |
+| Mumbai Import Checker | MIC | Mumbai | Import | Checker |
+| Mumbai Import Filer | MIF | Mumbai | Import | Filer |
+| Mumbai Export Maker | MEM | Mumbai | Export | Maker |
+| Mumbai Export Checker | MEC | Mumbai | Export | Checker |
+| Mumbai Export Filer | MEF | Mumbai | Export | Filer |
+| Delhi Import Maker | DIM | Delhi | Import | Maker |
+| Delhi Import Checker | DIC | Delhi | Import | Checker |
+| Delhi Import Filer | DIF | Delhi | Import | Filer |
+| Delhi Export Maker | DEM | Delhi | Export | Maker |
+| Delhi Export Checker | DEC | Delhi | Export | Checker |
+| Delhi Export Filer | DEF | Delhi | Export | Filer |
+| Admin | ADM | All | All | Admin |
 
-Branches are Mumbai (B1), Delhi (B2), Nagpur (B3), Pune (B4), and Gujrat (B5).
+All operational users initially have access to all 10 clients within their branch and direction. Client restrictions remain supported by nullable client scopes in grants and the user-management API.
 
-## What each user can do
+## Workflow
 
-- **Asha [Admin]:** may prepare, check, file, cancel, and reopen jobs. She can create and revoke grants for other users, but cannot grant herself a new role. Every administrative change is audited.
-- **Maya [Maker + Checker]:** may prepare jobs for any client, branch, direction, and mode. She may check only Client 1 jobs and Client 2 import jobs. She cannot check a job she prepared herself.
-- **Ravi [Restricted Checker]:** may check Client 2 imports at the Delhi branch only. He cannot check other clients, branches, or exports. He can file work assigned to him after it has been checked.
-- **Absent Owner [Maker]:** has a Maker assignment, but absence blocks every action until the user becomes active.
-- **Client User [ClientViewer]:** may follow Client 1 jobs but cannot perform internal workflow actions.
-- **Overnight Parser [System]:** is a background account, not a dashboard user. It may import incoming shipment data and cannot check, file, cancel, or reopen jobs.
+`Confirmed -> Prepared -> Checked -> Filed`. Jobs may also be Cancelled or Reopened. Makers can prepare only, Checkers can check only, Filers can file only, and Admin can perform administrative workflow actions. Branch, direction, client scope, role, stage, active status, and absence are all enforced. Unknown or invalid requests fail closed.
 
-The dashboard shows one person for each required access pattern. Redundant role variants were removed from the visible selector; the required distinctions are represented by Maya's multiple grants and Ravi's restricted grant.
+Confirmation is treated as job creation/system setup because the assignment does not define a separate confirmation role.
 
-The sample JSON files under `data/` document the core persona dataset; `npm run seed` generates the reproducible PostgreSQL demo dataset with 51 users, 300 jobs, and the grants above.
+## API
+
+- `GET /health`
+- `GET /users`
+- `POST /users` — admin-only user creation
+- `PATCH /users/:id` — admin-only profile/access update
+- `GET /users/:id/history` — audit history for administrative changes
+- `GET /jobs/for-me/:userId`
+- `GET /check?userId=...&jobId=...&action=...`
+- `POST /jobs/:id/actions`
+- `GET /jobs/:id/history`
+- `POST /grants`
+- `DELETE /grants/:id`
+
+All SQL is parameterized. User changes and grant changes are transactional with append-only history records. Admins cannot change their own access or status through the user-management API.
+
+## Demo
+
+1. Select `MIM` and load jobs; show that only Mumbai Import jobs can be prepared.
+2. Select `MIC`; show that only prepared Mumbai Import jobs can be checked.
+3. Select `MIF`; show that only checked Mumbai Import jobs can be filed.
+4. Select `DIC` and try a Mumbai or Export job; show the human-readable denial reason.
+5. Select `ADM`, open Admin Controls, and review all 13 users, their role, branch, direction, client scope, status, and assignment instructions.
+6. Select a job and show its append-only Audit History.
 
 ## Verification
 
-`npm test` runs the permission scenarios. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.
+`npm test` runs the permission scenarios. `npm run seed` creates the 13-user sample data. `npm run scale` creates a deterministic 500-user/200,000-job PostgreSQL dataset and reports insertion/query timings.

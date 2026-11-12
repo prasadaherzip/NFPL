@@ -8,6 +8,14 @@ Build a functional, tested, documented NFPL Access Control Service using Node.js
 
 The supplied assignment brief specifies SQLite via better-sqlite3. The user explicitly requested PostgreSQL while preserving the rest of the behavior, so the implementation now uses PostgreSQL with parameterized queries, pooled connections, PostgreSQL constraints/indexes, and transactional state changes plus audit writes. This is a documented scope deviation from the brief.
 
+## Current user-provided specification
+
+The PDF was read from `/Users/prasad/Downloads/NFPL_Access_Control_Assignment.pdf`. It describes the core workflow and edge cases but does not prescribe the 13-user/two-branch matrix in the pasted implementation specification. The current seed follows that pasted specification: Mumbai and Delhi, Import and Export, twelve coded Maker/Checker/Filer users, and ADM. The existing `ASSIGNMENT_BRIEF.md` was present despite the pasted instructions saying it was missing; this discrepancy is documented in `DESIGN.md`.
+
+The current implementation also adds admin-only `POST /users`, `PATCH /users/:id`, and `GET /users/:id/history` endpoints. Profile/access updates are parameterized, transactional, and append an audit event with actor, target, change details, reason, and timestamp. The dashboard Admin Controls tab can edit user name, role, branch, direction, client scope, active status, and absence.
+
+Verification of the new specification used a separate `nfpl_assignment` PostgreSQL database: `npm run seed` created 13 users, 2 branches, 10 clients, 300 jobs, and 12 grants; API smoke tests returned 13 users, 64 Mumbai Import Maker jobs, a successful Admin profile update, and one user-history record. `npm test` passes 11/11.
+
 ## Current implementation phase
 
 **Phase 11 — Final verification.** The official brief has been added and reconciled. Core implementation, tests, seed data, scale generation, dashboard, and documentation are complete. HTTP network smoke testing is blocked by the sandbox's `EPERM` restriction; application construction and all non-network checks pass.

@@ -1,3 +1,15 @@
 [
-  {"id":"admin","name":"Asha Admin","role":"admin"},{"id":"maker1","name":"Maya Maker","role":"maker"},{"id":"checker2","name":"Ravi Checker","role":"checker","client_id":"C2","branch_id":"B2"},{"id":"absent","name":"Absent Owner","role":"maker","branch_id":"B1","absent":true},{"id":"client1","name":"Client User","role":"client","client_id":"C1"},{"id":"parser","name":"Overnight Parser","role":"system","system_account":true}
+  {"id":"MIM","name":"Mumbai Import Maker","role":"maker","branch_id":"B1","direction":"import"},
+  {"id":"MIC","name":"Mumbai Import Checker","role":"checker","branch_id":"B1","direction":"import"},
+  {"id":"MIF","name":"Mumbai Import Filer","role":"filer","branch_id":"B1","direction":"import"},
+  {"id":"MEM","name":"Mumbai Export Maker","role":"maker","branch_id":"B1","direction":"export"},
+  {"id":"MEC","name":"Mumbai Export Checker","role":"checker","branch_id":"B1","direction":"export"},
+  {"id":"MEF","name":"Mumbai Export Filer","role":"filer","branch_id":"B1","direction":"export"},
+  {"id":"DIM","name":"Delhi Import Maker","role":"maker","branch_id":"B2","direction":"import"},
+  {"id":"DIC","name":"Delhi Import Checker","role":"checker","branch_id":"B2","direction":"import"},
+  {"id":"DIF","name":"Delhi Import Filer","role":"filer","branch_id":"B2","direction":"import"},
+  {"id":"DEM","name":"Delhi Export Maker","role":"maker","branch_id":"B2","direction":"export"},
+  {"id":"DEC","name":"Delhi Export Checker","role":"checker","branch_id":"B2","direction":"export"},
+  {"id":"DEF","name":"Delhi Export Filer","role":"filer","branch_id":"B2","direction":"export"},
+  {"id":"ADM","name":"Admin","role":"admin"}
 ]

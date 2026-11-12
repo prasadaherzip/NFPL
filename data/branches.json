@@ -1,3 +1,4 @@
 [
-  {"id":"B1","name":"Mumbai"},{"id":"B2","name":"Delhi"},{"id":"B3","name":"Nagpur"},{"id":"B4","name":"Pune"},{"id":"B5","name":"Gujrat"}
+  {"id":"B1","name":"Mumbai"},
+  {"id":"B2","name":"Delhi"}
 ]

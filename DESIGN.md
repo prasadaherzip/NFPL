@@ -32,3 +32,9 @@ Access changes are immediate: active grants are read on each request and revocat
 The user requested PostgreSQL instead of the SQLite stack specified by the assignment. The implementation uses the `pg` pool, `DATABASE_URL`, PostgreSQL constraints and indexes, parameterized `$1` queries, and transactions that include both job state changes and audit-history writes. The frontend and permission behavior remain unchanged.
 
 The seed also includes a distinct Filer role. A Filer can file checked jobs only, and branch/direction scope is represented as Import, Export, or two grants for Both.
+
+## Current specification reconciliation
+
+The PDF describes five branches and asks for about twenty deliberate users, while the user-provided implementation specification defines two branches and exactly thirteen users with short codes MIM, MIC, MIF, MEM, MEC, MEF, DIM, DIC, DIF, DEM, DEC, DEF, and ADM. The current seed follows the user-provided 13-user specification: Mumbai and Delhi, Import and Export, three operational roles per branch-direction team, and one Admin. The PDF's core workflow and edge cases remain implemented. `ASSIGNMENT_BRIEF.md` was present in the workspace despite the pasted instruction saying it was missing; the PDF was read and its discrepancy is documented here.
+
+Confirmation is treated as job creation/system setup because no separate confirmation role is defined. Client scope is initially all ten clients for each operational team and can be narrowed later through admin-managed grants.
