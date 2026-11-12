@@ -12,7 +12,6 @@ Requirements: Node.js 18+ and PostgreSQL.
 npm install
 createdb nfpl
 export DATABASE_URL=postgres://postgres:postgres@localhost:5432/nfpl
-export JWT_SECRET=replace-with-a-long-random-secret
 npm run seed
 npm test
 npm start
@@ -20,11 +19,7 @@ npm start
 
 Open <http://localhost:3000>. The schema is initialized automatically. `npm run seed` creates the reproducible demonstration dataset and replaces the contents of the selected database, so run it only against a disposable development/demo database.
 
-The demo profile selector remains for presentation views, but protected API actions use the authenticated JWT identity rather than trusting a different selected employee.
-
-## Authentication
-
-Employees log in with their employee code, such as `MIM`, `KRC`, or `PAM`. Seeded users initially use their branch name as the password (`Mumbai`, `Kolkata`, `Pune`, etc.). Users without a single branch use `All branches`; the parser uses `System`. Passwords are stored as scrypt hashes, and successful login returns an HS256 JWT in an HTTP-only cookie. Set a strong `JWT_SECRET` outside local development.
+The demo uses request-supplied user IDs as identity selectors. This is intentional for the assignment walkthrough and is not production authentication. A production deployment must replace those IDs with verified session or token identity.
 
 ## Backend structure
 
@@ -103,9 +98,6 @@ The scale script creates 500 users and 200,000 jobs and measures insertion plus 
 
 ## API
 
-- `POST /auth/login` - employee-code and branch-password JWT login.
-- `GET /auth/me` - current authenticated employee.
-- `POST /auth/logout` - clear the HTTP-only JWT cookie.
 - `GET /health` - service health check.
 - `GET /users` - users and their scopes.
 - `POST /users` - admin-only user creation.

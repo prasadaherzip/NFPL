@@ -44,8 +44,6 @@ Job creation now selects one employee; the employee’s existing Maker, Checker,
 
 The backend is now organized as ES-module MVC: `models` contain PostgreSQL queries, `controllers` implement request use cases, `routes` map HTTP endpoints, `services` provide transactions, `app.js` configures Express, and `server.js` only bootstraps the process. The frontend behavior and API endpoint contracts are preserved.
 
-Authentication now uses employee-code usernames, scrypt-hashed initial branch-name passwords, and signed HS256 JWTs stored in HTTP-only cookies. Protected API actions require the authenticated employee to match the selected actor. Branch IDs remain internal database keys; all visible branch labels use Mumbai, Delhi, Kolkata, Pune, or Nagpur.
-
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
 - ADM can now update their own role, branch, direction, client scope, active status, and absence through the audited modal; ordinary grant self-escalation remains blocked.

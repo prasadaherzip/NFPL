@@ -1,8 +1,4 @@
 import { openDatabase, initDatabase } from '../src/db.js';
-import { hashPassword } from '../src/services/authService.js';
-
-const passwordCache=new Map();
-async function scalePassword(branchId){const password={B1:'Mumbai',B2:'Delhi',B3:'Kolkata',B4:'Pune',B5:'Nagpur'}[branchId];if(!passwordCache.has(password))passwordCache.set(password,await hashPassword(password));return passwordCache.get(password)}
 
 (async()=>{
   const db=openDatabase();
@@ -13,7 +9,7 @@ async function scalePassword(branchId){const password={B1:'Mumbai',B2:'Delhi',B3
     await client.query('TRUNCATE history, grants, jobs, users, clients, branches RESTART IDENTITY CASCADE');
     for(const [id,name] of [['B1','Mumbai'],['B2','Delhi'],['B3','Kolkata'],['B4','Pune'],['B5','Nagpur']]) await client.query('INSERT INTO branches(id,name) VALUES($1,$2)',[id,name]);
     for(let i=1;i<=20;i++) await client.query('INSERT INTO clients(id,name) VALUES($1,$2)',[`C${i}`,`Client ${i}`]);
-    for(let i=1;i<=500;i++){const branchId=`B${i%5+1}`;await client.query('INSERT INTO users(id,name,role,branch_id,direction,password_hash) VALUES($1,$2,$3,$4,$5,$6)',[`u${i}`,`Scale User ${i}`,['maker','checker','filer'][i%3],branchId,i%2?'import':'export',await scalePassword(branchId)])}
+    for(let i=1;i<=500;i++) await client.query('INSERT INTO users(id,name,role,branch_id,direction) VALUES($1,$2,$3,$4,$5)',[`u${i}`,`Scale User ${i}`,['maker','checker','filer'][i%3],`B${i%5+1}`,i%2?'import':'export']);
     const start=performance.now();
     for(let i=1;i<=200000;i++){
       const stage=['new','prepared','checked','filed'][i%4];

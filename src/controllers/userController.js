@@ -1,15 +1,9 @@
 import { recordHistory } from '../history.js';
 import { transaction } from '../services/transaction.js';
-import { hashPassword } from '../services/authService.js';
 import { findUser, insertUser, listUsers, renameUser, updateUser as updateUserRecord } from '../models/userModel.js';
 import { fail } from '../utils/http.js';
 
 const ROLES = ['maker', 'checker', 'filer', 'admin', 'client', 'system'];
-
-async function initialPassword(db, branchId, role) {
-  const branch = branchId ? (await db.query('SELECT name FROM branches WHERE id=$1', [branchId])).rows[0] : null;
-  return hashPassword(branch?.name || (role === 'system' ? 'System' : 'All branches'));
-}
 
 export async function getUsers(req, res) {
   res.json({ users: await listUsers(req.app.locals.db) });
@@ -24,7 +18,7 @@ export async function createUser(req, res, next) {
     if (!id || !name || !ROLES.includes(role)) return fail(res, 400, 'id, name, and a valid role are required.');
     if (active === true && absent === true) return fail(res, 400, 'A user cannot be both active and absent.');
     const result = await transaction(db, async client => {
-      const created = await insertUser(client, [id, name, role, clientId, branchId, direction, absent === true ? false : Boolean(active), Boolean(absent), await initialPassword(client, branchId, role)]);
+      const created = await insertUser(client, [id, name, role, clientId, branchId, direction, absent === true ? false : Boolean(active), Boolean(absent)]);
       await recordHistory(client, { actorId: actor.id, targetUserId: id, action: 'user_created', changeDetails: JSON.stringify(req.body), allowed: true, reason: 'Admin created user.' });
       return created;
     });
@@ -39,7 +33,7 @@ export async function updateUser(req, res, next) {
     const target = await findUser(db, req.params.id);
     if (!actor || actor.role !== 'admin') return fail(res, 403, 'Only an admin may update users.');
     if (!target) return fail(res, 404, 'User not found.');
-    const allowed = { name: 'name', role: 'role', clientId: 'client_id', branchId: 'branch_id', direction: 'direction', active: 'active', absent: 'absent', passwordHash: 'password_hash' };
+    const allowed = { name: 'name', role: 'role', clientId: 'client_id', branchId: 'branch_id', direction: 'direction', active: 'active', absent: 'absent' };
     const fields = Object.keys(allowed).filter(key => Object.prototype.hasOwnProperty.call(req.body, key));
     const newId = String(req.body.id || target.id).trim();
     if (!newId) return fail(res, 400, 'Employee code is required.');
@@ -48,7 +42,6 @@ export async function updateUser(req, res, next) {
     if (newId !== target.id && await findUser(db, newId)) return fail(res, 409, 'That employee code is already in use.');
     if (req.body.absent === true) { if (!fields.includes('active')) fields.push('active'); req.body.active = false; }
     if (req.body.active === true) { if (!fields.includes('absent')) fields.push('absent'); req.body.absent = false; }
-    if (Object.prototype.hasOwnProperty.call(req.body, 'branchId')) { fields.push('passwordHash'); req.body.passwordHash = await initialPassword(db, req.body.branchId, req.body.role || target.role); }
     if (!fields.length && newId === target.id) return fail(res, 400, 'No supported user fields supplied.');
     const result = await transaction(db, async client => {
       let updated;

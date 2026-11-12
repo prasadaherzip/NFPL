@@ -7,7 +7,7 @@ export async function listUsers(db) {
 }
 
 export async function insertUser(db, values) {
-  return (await db.query('INSERT INTO users(id,name,role,client_id,branch_id,direction,active,absent,password_hash) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *', values)).rows[0];
+  return (await db.query('INSERT INTO users(id,name,role,client_id,branch_id,direction,active,absent) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', values)).rows[0];
 }
 
 export async function updateUser(db, id, fields) {
