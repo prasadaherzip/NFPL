@@ -65,7 +65,7 @@ All SQL is parameterized. User and grant changes are transactional with append-o
 
 ## Demo
 
-1. Select `MIM`; show that only Mumbai Import jobs can be prepared.
+1. Select `MIM`; all jobs are shown, then use the filters to find Mumbai Import jobs and show that only those jobs can be prepared.
 2. Select `MIC`; show that only prepared Mumbai Import jobs can be checked.
 3. Select `MIF`; show that only checked Mumbai Import jobs can be filed.
 4. Select `KRC`; try a non-Kolkata, non-Import, or non-Client-1 job and show the denial reason.

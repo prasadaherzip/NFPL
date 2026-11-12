@@ -18,7 +18,7 @@ Latest authorization rule: ADM can view jobs, manage users/access profiles, and 
 
 The corrected seed now creates the five branches Mumbai, Delhi, Kolkata, Pune, and Nagpur; only Mumbai and Delhi receive standard teams. ABM, KRC, PAM, NCU, ADM, and PAR cover the special cases. It creates 309 jobs, with additional sample jobs for KRC, PAM, and NCU.
 
-The dashboard now loads the selected user profile automatically; the separate `Load jobs` button was removed. Client, branch, status, direction, mode, and job-number filters can be applied directly to the selected profile’s job list.
+The dashboard now loads the selected user profile automatically; the separate `Load jobs` button was removed. Every profile receives the complete active-branch/client job list for presentation, and Client, branch, status, direction, mode, and job-number filters are manual. The selected profile still controls action authorization through the permission engine.
 
 Updated the job list so completed actions remain visible: the row's Current Stage is updated in place and the adjacent Action Taken column records the latest successful action instead of removing the job or showing a future action.
 - Removed the Assignment column from the Admin Controls user table; user editing and grant management remain available.
