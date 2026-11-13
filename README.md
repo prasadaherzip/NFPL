@@ -2,6 +2,8 @@
 
 NFPL is a customs-brokerage access-control service. It decides who may perform an action on a shipment job, explains the decision, shows jobs relevant to a person, and records audit history.
 
+Live deployment: [nfpl-78jl.onrender.com](https://nfpl-78jl.onrender.com/)
+
 The implementation uses Node.js, Express, PostgreSQL via `pg`, plain HTML/CSS/JavaScript, and the Node.js built-in test runner. The assignment allows any language, framework, and storage choice; PostgreSQL was selected for the relational permission and audit model.
 
 ## Run locally

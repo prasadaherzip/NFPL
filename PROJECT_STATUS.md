@@ -1,5 +1,9 @@
 # NFPL Access Control Service — Project Status
 
+## Session update — 2026-11-13
+
+Added the deployed application link to `README.md`: https://nfpl-78jl.onrender.com/. The required `ASSIGNMENT_BRIEF.md` is not present in the workspace, so no changes were made to reconcile against it during this documentation-only update.
+
 ## Assignment compliance audit — 2026-11-12
 
 README updated to align with the attached PDF: it now documents the assignment scope, sample-data requirements, scale command, API, five-minute demo, verification commands, and direct answers to all 14 design questions. The README preserves the known audit limitations instead of claiming full production compliance.
